@@ -1,0 +1,10 @@
+.venv
+__pycache__
+./__pycache__/*
+*.pyc
+*.pyo
+*.pyd
+poetry.lock
+dist
+.pytest_cache
+**/__pycache__/
