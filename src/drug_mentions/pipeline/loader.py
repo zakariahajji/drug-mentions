@@ -8,7 +8,7 @@ from drug_mentions.models.schema import Drug, Publication
 
 def parse_date(date_str: str) -> datetime:
     """
-    Try multiple date formats and return a datetime object.
+    try multiple date formats and return a datetime object.
     Raises ValueError if the date cannot be parsed.
     """
     if not isinstance(date_str, str):

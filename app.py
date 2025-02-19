@@ -12,7 +12,7 @@ from drug_mentions.pipeline.writer import DataWriter
 from utils.d3_viewer import d3_viewer
 
 st.set_page_config(layout="wide")
-st.title("Drug Mentions Finder with Modern Network Visualization")
+st.title("Drug mentions finder with data viz!")
 
 col_left, col_right = st.columns([1, 1])
 

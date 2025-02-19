@@ -2,6 +2,7 @@ import json
 import streamlit.components.v1 as components
 
 def d3_viewer(data: dict, height: int = 800):
+    """Render a D3.js network graph in Streamlit using the provided data."""
     json_data = json.dumps(data, ensure_ascii=False)
     
     html_code = f"""
