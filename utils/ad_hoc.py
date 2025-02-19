@@ -1,6 +1,7 @@
-import duckdb
 import json
 from pathlib import Path
+
+import duckdb
 
 # Read and parse the JSON file
 json_path = Path("src/data/output/drug_mentions.json")
@@ -14,7 +15,8 @@ json_literal = json.dumps(json_data)
 con = duckdb.connect()
 
 # create a table with the JSON data
-con.execute(f"""
+con.execute(
+    f"""
     CREATE OR REPLACE TABLE dm AS 
     WITH j AS (
       SELECT CAST('{json_literal}' AS JSON) AS js
@@ -25,10 +27,12 @@ con.execute(f"""
     FROM j,
     UNNEST(json_keys(js)) AS t(key)
     WHERE key != '';
-""")
+"""
+)
 
 # Count distinct drugs per journal with better handling of journal names
-con.execute("""
+con.execute(
+    """
     WITH RECURSIVE journal_mentions AS (
         SELECT 
             drug,
@@ -46,9 +50,12 @@ con.execute("""
     GROUP BY journal_name
     ORDER BY distinct_drugs DESC
     LIMIT 1;
-""")
+"""
+)
 
 result = con.fetchall()
 if result:
-    print(f"Le journal qui mentionne le plus de médicaments différents est {result[0][0]} "
-          f"avec {result[0][1]} médicaments différents : {result[0][2]}")
+    print(
+        f"Le journal qui mentionne le plus de médicaments différents est {result[0][0]} "
+        f"avec {result[0][1]} médicaments différents : {result[0][2]}"
+    )

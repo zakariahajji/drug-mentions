@@ -1,18 +1,20 @@
-from typing import Any
-from pydantic import BaseModel, root_validator, validator
 from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel, root_validator, validator
+
 
 class Drug(BaseModel):
     atccode: str
     drug: str
+
 
 class Publication(BaseModel):
     id: str
     title: str
     date: datetime
     journal: str
-    source: str = 'pubmed'
-
+    source: str = "pubmed"
 
     @root_validator(pre=True)
     def use_scientific_title_if_title_missing(cls, values: dict) -> dict:
@@ -25,12 +27,12 @@ class Publication(BaseModel):
         if isinstance(value, datetime):
             return value
         formats = [
-            "%Y-%m-%d",    # different date formats
-            "%d/%m/%Y",   
-            "%d %B %Y",    
-            "%d %b %Y",   
-            "%B %d, %Y",   
-            "%b %d, %Y"   
+            "%Y-%m-%d",  # different date formats
+            "%d/%m/%Y",
+            "%d %B %Y",
+            "%d %b %Y",
+            "%B %d, %Y",
+            "%b %d, %Y",
         ]
         for fmt in formats:
             try:
@@ -40,10 +42,12 @@ class Publication(BaseModel):
         # Fall back to dateutil if available
         try:
             from dateutil import parser
+
             return parser.parse(value)
         except Exception as e:
             raise ValueError(f"Invalid date format: {value}") from e
 
+
 class DrugMention(BaseModel):
     drug: str
-    mentions: dict 
+    mentions: dict
