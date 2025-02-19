@@ -15,6 +15,7 @@ pandas = "^2.0.0"
 pydantic = "^1.10.0"
 streamlit = "^1.25.0"
 duckdb = "^1.2.0"
+pre-commit = "^4.1.0"
 
 [tool.poetry.scripts]
 drug-mentions = "drug_mentions.main:main"

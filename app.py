@@ -1,14 +1,13 @@
-import streamlit as st
-import pandas as pd
 import json
 import tempfile
 from pathlib import Path
 
-# Import your pipeline components (adjust the import paths as needed)
+import pandas as pd
+import streamlit as st
+
 from drug_mentions.pipeline.loader import DataLoader
 from drug_mentions.pipeline.transformer import DataTransformer
 from drug_mentions.pipeline.writer import DataWriter
-
 from utils.d3_viewer import d3_viewer
 
 st.set_page_config(layout="wide")
@@ -16,9 +15,11 @@ st.title("Drug mentions finder with data viz!")
 
 col_left, col_right = st.columns([1, 1])
 
+
 def save_uploaded_file(uploaded_file, save_path: Path):
     with open(save_path, "wb") as f:
         f.write(uploaded_file.getvalue())
+
 
 with col_left:
     st.header("Upload CSV Files")
@@ -41,7 +42,7 @@ if process_button:
             output_dir = tmp_dir / "output"
             input_dir.mkdir(parents=True, exist_ok=True)
             output_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Save the uploaded files in the "input" folder with expected filenames
             save_uploaded_file(clinical_file, input_dir / "clinical_trials.csv")
             save_uploaded_file(drugs_file, input_dir / "drugs.csv")
