@@ -8,34 +8,45 @@ class DataTransformer:
         
         for drug in drugs:
             drug_mentions = {
-                "pubmed_mentions": [],
-                "clinical_trials_mentions": [],
-                "journals": set()
+                "mentions": {
+                    "pubmed": [  
+                        {
+                            "id": pub.id,
+                            "title": pub.title,
+                            "date": pub.date.strftime('%Y-%m-%d'), 
+                            "source": "pubmed"
+                        }
+                        for pub in publications 
+                        if hasattr(pub, 'source') 
+                        and pub.source == 'pubmed'
+                        and drug.drug.lower() in pub.title.lower()
+                    ],
+                    "clinical_trials": [
+                        {
+                            "id": pub.id,
+                            "title": pub.title,
+                            "date": pub.date.strftime('%Y-%m-%d'),
+                            "source": "clinical_trial"
+                        }
+                        for pub in publications
+                        if hasattr(pub, 'source')
+                        and pub.source == 'clinical_trial'
+                        and drug.drug.lower() in pub.title.lower()
+                    ],
+                    "journals": [
+                        {
+                            "name": pub.journal,
+                            "date": pub.date.strftime('%Y-%m-%d')
+                        }
+                        for pub in publications
+                        if drug.drug.lower() in pub.title.lower()
+                        and pub.journal is not None
+                    ]
+                }
             }
             
-            for pub in publications:
-                if drug.drug.lower() in pub.title.lower():
-                    mention = {
-                        "id": pub.id,
-                        "title": pub.title,
-                        "date": pub.date.strftime('%d/%m/%Y'),
-                        "journal": pub.journal
-                    }
-                    
-                    if hasattr(pub, 'source'):
-                        if pub.source == 'pubmed':
-                            drug_mentions["pubmed_mentions"].append(mention)
-                        else:
-                            drug_mentions["clinical_trials_mentions"].append(mention)
-                    else:
-                        # Default to pubmed if source not specified
-                        drug_mentions["pubmed_mentions"].append(mention)
-                    
-                    drug_mentions["journals"].add(pub.journal)
-            
             # Only add drugs that have mentions
-            if drug_mentions["pubmed_mentions"] or drug_mentions["clinical_trials_mentions"]:
-                drug_mentions["journals"] = list(drug_mentions["journals"])
+            if any(len(mentions) > 0 for mentions in drug_mentions["mentions"].values()):
                 mentions[drug.drug] = drug_mentions
         
         return mentions

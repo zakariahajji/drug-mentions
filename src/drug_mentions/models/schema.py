@@ -11,6 +11,8 @@ class Publication(BaseModel):
     title: str
     date: datetime
     journal: str
+    source: str = 'pubmed'
+
 
     @root_validator(pre=True)
     def use_scientific_title_if_title_missing(cls, values: dict) -> dict:
