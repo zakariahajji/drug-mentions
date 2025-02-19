@@ -1,24 +1,25 @@
-[project]
+[tool.poetry]
 name = "drug-mentions"
 version = "0.1.0"
-description = "Drug mentions pipeline"
-authors = [
-    {name = "Your Name",email = "your.email@example.com"}
-]
+description = "Data pipeline for drug mentions"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT"
 readme = "README.md"
-requires-python = "^3.13"
-dependencies = [
-    "pandas (>=2.2.3,<3.0.0)",
-    "pydantic (>=2.10.6,<3.0.0)"
+packages = [
+  { include = "drug_mentions", from = "src" }
 ]
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.25.0"
+pandas = "^2.0.0"
+pydantic = "^1.10.0"
 
-[tool.poetry]
+[tool.poetry.scripts]
+drug-mentions = "drug_mentions.main:main"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.4"
-black = "^25.1.0"
-isort = "^6.0.0"
+pytest = "^7.0"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
