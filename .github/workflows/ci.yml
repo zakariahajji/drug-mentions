@@ -38,6 +38,9 @@ jobs:
       - name: Clear cached virtualenv
         run: rm -rf .venv
 
+      - name: Update poetry lock file
+        run: poetry lock --no-update
+
       - name: Install dependencies
         run: poetry install --no-interaction --no-ansi
 
