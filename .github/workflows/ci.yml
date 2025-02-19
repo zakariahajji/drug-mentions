@@ -38,5 +38,11 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --no-ansi
 
+      - name: Check code formatting (Black)
+        run: poetry run black --check .
+
+      - name: Check import ordering (isort)
+        run: poetry run isort --check-only .
+
       - name: Run tests
-        run: poetry run pytest --maxfail=1 --disable-warnings -q
+        run: poetry run pytest --maxfail=1 --disable-warnings -v
