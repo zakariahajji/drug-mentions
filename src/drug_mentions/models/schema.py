@@ -16,7 +16,7 @@ class Publication(BaseModel):
     journal: str
     source: str = "pubmed"
 
-    @root_validator(pre=True)
+    @root_validator(pre=True, allow_reuse=True)
     def use_scientific_title_if_title_missing(cls, values: dict) -> dict:
         if "title" not in values and "scientific_title" in values:
             values["title"] = values["scientific_title"]
