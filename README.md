@@ -3,6 +3,9 @@
 Check it live on [Streamlit](https://drug-mentions-ktihvqxgbuay9lcvcystm3.streamlit.app/
 )
 
+![Alt text](Screenshot.png)
+
+
 Pre-requisits : 
 
 - Python 3.11 (or compatible) installed
@@ -64,6 +67,8 @@ poetry install
     │   └── test_writer.py
     └── utils/
         └── d3_viewer.py
+        └── ad_hoc.ipynb
+        └── example_dag.py
 ```
 
 
@@ -107,22 +112,57 @@ tests/test_writer.py .                                                          
 
 
 
-You can run the ad-hoc script by running : 
+You can run the ad-hoc notebook script : 
 
 ```
-drug-mentions-py3.11➜  drug-mentions git:(main) ✗ poetry run python utils/ad_hoc.py
-
-Le journal qui mentionne le plus de médicaments différents est The journal of maternal-fetal & neonatal medicine avec 2 médicaments différents : ATROPINE,BETAMETHASONE
+Using JSON file: /Users/zakaria/Development/solution/drug-mentions/src/data/output/drug_mentions.json
+Le journal qui mentionne le plus de médicaments différents est Psychopharmacology avec 2 médicaments différents : ['TETRACYCLINE', 'ETHANOL']
 ```
 
 
 ## Commentaires 
 
-Le code est organisé de manière modulaire en séparant clairement les étapes clés du pipeline (Loader, transformation et Writer). Cela permet de réutiliser certaines étapes dans d'autres pipelines de données. De plus, la structure a été conçue pour être facilement intégrée dans un orchestrateur(comme un DAG Airflow), On peut ainsi personaliser chaque module pour faire le job selon le service orchestré.
+Le code est organisé de manière modulaire en séparant clairement les étapes clés du pipeline (Loader, transformation et Writer). Cela permet de réutiliser certaines étapes dans d'autres pipelines de données. De plus, la structure a été conçue pour être facilement intégrée dans un orchestrateur(comme un [DAG Airflow](utils/example_dag.py)), On peut ainsi personaliser chaque module pour faire le job selon le service orchestré.
 Personalisations possibles selon le context : 
 
     ( Loader et transformer > Partitionner et distribuer le calcul (Spark : aws:EMR/gcp:DataProc) , ou DBT/BigQuery
 
-    (Writer : Ca dépend des use-cases, OLTP/NoSQL > Applicatif OU BI et Dashboards : Datawarehouse ( Bigquery...))
+    (Writer : Ca dépend des use-cases, OLTP/NoSQL > Applicatif OU BI et Analytics/OLAP : Datawarehouse ( Bigquery...))
 
     
+## Réponses Partie SQL :
+
+1 - 
+
+```
+SELECT 
+  DATE(date) AS date,
+  SUM(prod_price * prod_qty) AS ventes
+FROM `playground-playground-dev.servier_home.TRANSACTIONS`
+WHERE DATE(date) BETWEEN '2019-01-01' AND '2019-12-31'
+GROUP BY date
+ORDER BY date ASC;
+```
+
+
+
+2 -
+
+```
+SELECT 
+  t.client_id,
+  SUM(CASE 
+    WHEN pn.product_type = 'MEUBLE' THEN t.prod_price * t.prod_qty 
+    ELSE 0 
+  END) AS ventes_meuble,
+  SUM(CASE 
+    WHEN pn.product_type = 'DECO' THEN t.prod_price * t.prod_qty 
+    ELSE 0 
+  END) AS ventes_deco
+FROM `playground-playground-dev.servier_home.TRANSACTIONS` t
+INNER JOIN `playground-playground-dev.servier_home.PRODUCT_NOMENCLATURE` pn
+  ON t.prod_id = pn.product_id
+WHERE DATE(t.date) BETWEEN '2019-01-01' AND '2019-12-31'
+GROUP BY t.client_id
+ORDER BY t.client_id;
+```

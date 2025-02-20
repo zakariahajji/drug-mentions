@@ -18,7 +18,7 @@ from drug_mentions.pipeline.writer import DataWriter
 
 def load_data(**kwargs):
     """Load the data from the input directory."""
-    input_dir = Path("/path/to/your/input")
+    input_dir = Path("/input")
     loader = DataLoader(str(input_dir))
     drugs = loader.load_drugs()
     pubs = loader.load_pubmed() + loader.load_clinical_trials()
@@ -41,7 +41,7 @@ def write_data(**kwargs):
     """Write the transformed data to a JSON file Ou BigQuery."""
     ti = kwargs["ti"]
     mentions = ti.xcom_pull(task_ids="transform_data")
-    output_dir = Path("/path/to/your/output")
+    output_dir = Path("/output")
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / "drug_mentions.json"
     DataWriter().write_json(mentions, output_file)
