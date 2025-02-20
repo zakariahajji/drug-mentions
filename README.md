@@ -120,7 +120,7 @@ Le journal qui mentionne le plus de médicaments différents est Psychopharmacol
 ```
 
 
-## Commentaires 
+## Commentaires et réponses
 
 Le code est organisé de manière modulaire en séparant clairement les étapes clés du pipeline (Loader, transformation et Writer). Cela permet de réutiliser certaines étapes dans d'autres pipelines de données. De plus, la structure a été conçue pour être facilement intégrée dans un orchestrateur(comme un [DAG Airflow](utils/example_dag.py)), On peut ainsi personaliser chaque module pour faire le job selon le service orchestré.
 Personalisations possibles selon le context : 
@@ -128,6 +128,22 @@ Personalisations possibles selon le context :
     ( Loader et transformer > Partitionner et distribuer le calcul (Spark : aws:EMR/gcp:DataProc) , ou DBT/BigQuery
 
     (Writer : Ca dépend des use-cases, OLTP/NoSQL > Applicatif OU BI et Analytics/OLAP : Datawarehouse ( Bigquery...))
+
+
+
+  - Q : Quels sont les éléments à considérer pour faire évoluer votre code afin qu’il puisse gérer de grosses
+  volumétries de données (fichiers de plusieurs To ou millions de fichiers par exemple) ?
+  Pourriez-vous décrire les modifications qu’il faudrait apporter, s’il y en a, pour prendre en considération de
+  telles volumétries ?
+
+  - R : Parallélisation et distribution :
+  il faut repenser l’architecture en décomposant le pipeline en tâches indépendantes et parallélisables, par exemple en microservices ou jobs orchestrés. Chaque étape (chargement, transformation, écriture) doit être isolée et capable de traiter des partitions de données en parallèle, ce qui réduit l’empreinte mémoire et accélère le traitement
+
+    l’utilisation d’un outil distribué tel que Spark est idéale. Spark permet de traiter d’importants volumes de données grâce à son moteur en mémoire, sa capacité à partitionner les données sur un cluster et à paralléliser les calculs sur plusieurs nœuds. Cela simplifie l’évolution vers des architectures scalables et robust pour des volumes de plusieurs To ou millions de fichiers.
+
+
+
+  
 
     
 ## Réponses Partie SQL :
